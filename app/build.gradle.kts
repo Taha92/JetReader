@@ -92,6 +92,9 @@ dependencies {
     kapt("com.google.dagger:hilt-compiler:2.50")
     implementation("androidx.hilt:hilt-navigation-compose:1.2.0")
 
+    //This effects build time
+    //mplementation("androidx.compose.material:material-icons-extended:1.6.8")
+
     //Retrofit
     implementation("com.squareup.retrofit2:retrofit:2.9.0")
     //GSON converter
