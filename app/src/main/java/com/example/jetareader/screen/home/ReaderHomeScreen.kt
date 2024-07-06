@@ -61,7 +61,7 @@ fun ReaderHomeScreen(navController: NavController = NavController(LocalContext.c
     },
         floatingActionButton = {
             FABContent {
-
+                navController.navigate(ReaderScreens.SearchScreen.name)
             }
         }) {
         //content
