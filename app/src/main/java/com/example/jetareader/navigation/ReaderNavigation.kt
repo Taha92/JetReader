@@ -2,14 +2,15 @@ package com.example.jetareader.navigation
 
 import androidx.compose.runtime.Composable
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import com.example.jetareader.screen.ReaderSplashScreen
 import com.example.jetareader.screen.details.BookDetailsScreen
 import com.example.jetareader.screen.home.ReaderHomeScreen
 import com.example.jetareader.screen.login.ReaderLoginScreen
-import com.example.jetareader.screen.search.BookSearchViewModel
 import com.example.jetareader.screen.search.BooksSearchViewModel
 import com.example.jetareader.screen.search.SearchScreen
 import com.example.jetareader.screen.stats.ReaderStatsScreen
@@ -39,8 +40,13 @@ fun ReaderNavigation() {
             ReaderLoginScreen(navController = navController)
         }
 
-        composable(ReaderScreens.DetailScreen.name) {
-            BookDetailsScreen(navController = navController)
+        val detailName = ReaderScreens.DetailScreen.name
+        composable("$detailName/{bookId}", arguments = listOf(navArgument("bookId") {
+            type = NavType.StringType
+        })) { backStackEntry ->
+            backStackEntry.arguments?.getString("bookId").let {
+                BookDetailsScreen(navController = navController, bookId = it.toString())
+            }
         }
 
         composable(ReaderScreens.UpdateScreen.name) {
