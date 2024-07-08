@@ -4,7 +4,6 @@ import com.example.jetareader.data.Resource
 import com.example.jetareader.model.Item
 import com.example.jetareader.network.BooksApi
 import javax.inject.Inject
-import kotlin.Exception
 
 class BookRepository @Inject constructor(private val api: BooksApi) {
     suspend fun getBooks(searchQuery: String): Resource<List<Item>>{
