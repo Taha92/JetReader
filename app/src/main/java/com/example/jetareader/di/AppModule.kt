@@ -1,8 +1,9 @@
 package com.example.jetareader.di
 
 import com.example.jetareader.network.BooksApi
-import com.example.jetareader.repository.BookRepository2
+import com.example.jetareader.repository.FireRepository
 import com.example.jetareader.util.Constants
+import com.google.firebase.firestore.FirebaseFirestore
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -17,7 +18,9 @@ object AppModule {
 
     @Singleton
     @Provides
-    fun provideBookRepository(api: BooksApi) = BookRepository2(api)
+    fun provideFireBookRepository()
+        = FireRepository(queryBook = FirebaseFirestore.getInstance()
+        .collection("books"))
 
     @Singleton
     @Provides
