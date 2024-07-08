@@ -1,6 +1,8 @@
 package com.example.jetareader.component
 
+import android.content.Context
 import android.view.MotionEvent
+import android.widget.Toast
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.spring
@@ -462,4 +464,9 @@ fun RatingBar(
             )
         }
     }
+}
+
+fun showToast(context: Context, msg: String) {
+    Toast.makeText(context, msg, Toast.LENGTH_LONG)
+        .show()
 }

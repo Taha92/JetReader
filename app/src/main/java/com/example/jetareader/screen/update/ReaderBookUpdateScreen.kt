@@ -18,8 +18,10 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -27,6 +29,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
@@ -36,20 +39,28 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import coil.compose.rememberImagePainter
+import com.example.jetareader.R
 import com.example.jetareader.component.InputField
 import com.example.jetareader.component.RatingBar
 import com.example.jetareader.component.ReaderAppBar
+import com.example.jetareader.component.RoundedButton
+import com.example.jetareader.component.showToast
 import com.example.jetareader.data.DataOrException
 import com.example.jetareader.model.MBook
 import com.example.jetareader.navigation.ReaderScreens
 import com.example.jetareader.screen.home.HomeScreenViewModel
+import com.example.jetareader.util.formatDate
+import com.google.firebase.Timestamp
+import com.google.firebase.firestore.FirebaseFirestore
 
 @Composable
 fun BookUpdateScreen(navController: NavController,
@@ -107,6 +118,7 @@ fun BookUpdateScreen(navController: NavController,
 
 @Composable
 fun ShowSimpleForm(book: MBook, navController: NavController) {
+    val context = LocalContext.current
     val notesText = remember { mutableStateOf("") }
     val isStartedReading = remember { mutableStateOf(false) }
     val isFinishedReading = remember { mutableStateOf(false) }
@@ -137,7 +149,7 @@ fun ShowSimpleForm(book: MBook, navController: NavController) {
                     )
                 }
             } else {
-                Text(text = "Started on: ${book.startedReading}") //TODO format date
+                Text(text = "Started on: ${formatDate(book.startedReading!!)}")
             }
         }
         
@@ -154,7 +166,7 @@ fun ShowSimpleForm(book: MBook, navController: NavController) {
                     Text(text = "Finished Reading!")
                 }
             } else {
-                Text(text = "Finished on: ${book.finishedReading}") //TODO format
+                Text(text = "Finished on: ${formatDate(book.finishedReading!!)}")
             }
         }
     }
@@ -164,6 +176,90 @@ fun ShowSimpleForm(book: MBook, navController: NavController) {
         RatingBar(rating = it!!) { rating ->
             ratingVal.value = rating
         }
+    }
+
+    Spacer(modifier = Modifier.padding(bottom = 15.dp))
+
+    Row {
+        val changedNotes = book.notes != notesText.value
+        val changedRating = book.rating?.toInt() != ratingVal.value
+        val isFinishedTimeStamp = if (isFinishedReading.value) Timestamp.now() else book.finishedReading
+        val isStartedTimeStamp = if (isStartedReading.value) Timestamp.now() else book.startedReading
+
+        val bookUpdate = changedNotes || changedRating || isFinishedReading.value || isStartedReading.value
+
+        val bookToUpdate = hashMapOf(
+            "finished_reading_at" to isFinishedTimeStamp,
+            "started_reading_at" to isStartedTimeStamp,
+            "rating" to ratingVal.value,
+            "notes" to notesText.value
+        ).toMap()
+
+        RoundedButton(label = "Update") {
+            if (bookUpdate) {
+                FirebaseFirestore.getInstance()
+                    .collection("books")
+                    .document(book.id!!)
+                    .update(bookToUpdate)
+                    .addOnCompleteListener {
+                        showToast(context, "Book Updated Successfully!")
+                        navController.navigate(ReaderScreens.ReaderHomeScreen.name)
+                    }
+                    .addOnFailureListener {
+                        Log.w("Error", "ShowSimpleForm: Error updating document", it)
+                    }
+            }
+        }
+        Spacer(modifier = Modifier.width(100.dp))
+
+        val openDialog = remember {
+            mutableStateOf(false)
+        }
+        if (openDialog.value) {
+            ShowAlertDialog(message = stringResource(id = R.string.sure) + "\n" +
+                            stringResource(id = R.string.action), openDialog) {
+                FirebaseFirestore.getInstance()
+                    .collection("books")
+                    .document(book.id!!)
+                    .delete()
+                    .addOnCompleteListener {
+                        if (it.isSuccessful) {
+                            openDialog.value = false
+
+                             /*Don't popBackStack() if we want the immediate recomposition
+                             of the MainScreen UI, instead navigate to the mainScreen!*/
+
+                            navController.navigate(ReaderScreens.ReaderHomeScreen.name)
+                        }
+                    }
+            }
+        }
+        RoundedButton(label = "Delete") {
+            openDialog.value = true
+        }
+    }
+}
+
+@Composable
+fun ShowAlertDialog(
+    message: String,
+    openDialog: MutableState<Boolean>,
+    onYesPressed: () -> Unit
+) {
+    if (openDialog.value) {
+        AlertDialog(
+            title = { Text(text = "Delete Book") },
+            text = { Text(text = message) },
+            onDismissRequest = { openDialog.value = false },
+            confirmButton = {
+                TextButton(onClick = { onYesPressed.invoke() }) {
+                    Text(text = "Yes")
+            } },
+            dismissButton = {
+                TextButton(onClick = { openDialog.value = false }) {
+                    Text(text = "No")
+                }
+            },)
     }
 }
 
