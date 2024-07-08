@@ -2,6 +2,7 @@ package com.example.jetareader.screen.update
 
 import android.util.Log
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -14,6 +15,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.Card
@@ -24,17 +26,22 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.produceState
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import coil.compose.rememberImagePainter
+import com.example.jetareader.component.InputField
 import com.example.jetareader.component.ReaderAppBar
 import com.example.jetareader.data.DataOrException
 import com.example.jetareader.model.MBook
@@ -85,9 +92,56 @@ fun BookUpdateScreen(navController: NavController,
                     ) {
                         ShowBookUpdate(bookInfo = viewModel.data.value, bookItemId = bookItemId)
                     }
+
+                    ShowSimpleForm(book = viewModel.data.value.data?.first { mBook ->
+                        mBook.googleBookId == bookItemId
+                    }!!, navController)
                 }
             }
         }
+    }
+}
+
+@Composable
+fun ShowSimpleForm(book: MBook, navController: NavController) {
+    val notesText = remember {
+        mutableStateOf("")
+    }
+
+    SimpleForm(defaultValue = if (book.notes.toString().isNotEmpty()) book.notes.toString()
+    else "No thoughts available.") { note ->
+        notesText.value = note
+    }
+}
+
+@Composable
+fun SimpleForm(
+    modifier: Modifier = Modifier,
+    loading: Boolean = false,
+    defaultValue: String = "Great Book!",
+    onSearch: (String) -> Unit
+) {
+    Column {
+        val textFieldValue = rememberSaveable { mutableStateOf(defaultValue) }
+        val keyboardController = LocalSoftwareKeyboardController.current
+        val valid = remember(textFieldValue.value) { textFieldValue.value.trim().isNotEmpty() }
+
+        InputField(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(140.dp)
+                .padding(3.dp)
+                .background(Color.White, CircleShape)
+                .padding(horizontal = 20.dp, vertical = 12.dp),
+            valueState = textFieldValue,
+            labelId = "Enter your thoughts",
+            enabled = true,
+            onAction = KeyboardActions {
+                if (!valid) return@KeyboardActions
+                onSearch(textFieldValue.value.trim())
+                keyboardController?.hide()
+            }
+        )
     }
 }
 
