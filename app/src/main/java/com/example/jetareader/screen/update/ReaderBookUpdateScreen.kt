@@ -25,6 +25,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.produceState
@@ -32,6 +33,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
@@ -42,6 +44,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import coil.compose.rememberImagePainter
 import com.example.jetareader.component.InputField
+import com.example.jetareader.component.RatingBar
 import com.example.jetareader.component.ReaderAppBar
 import com.example.jetareader.data.DataOrException
 import com.example.jetareader.model.MBook
@@ -104,13 +107,63 @@ fun BookUpdateScreen(navController: NavController,
 
 @Composable
 fun ShowSimpleForm(book: MBook, navController: NavController) {
-    val notesText = remember {
-        mutableStateOf("")
-    }
+    val notesText = remember { mutableStateOf("") }
+    val isStartedReading = remember { mutableStateOf(false) }
+    val isFinishedReading = remember { mutableStateOf(false) }
+    val ratingVal = remember { mutableStateOf(0) }
 
     SimpleForm(defaultValue = if (book.notes.toString().isNotEmpty()) book.notes.toString()
     else "No thoughts available.") { note ->
         notesText.value = note
+    }
+
+    Row(modifier = Modifier
+        .padding(4.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.Start
+    ) {
+        TextButton(
+            onClick = { isStartedReading.value = true },
+            enabled = book.startedReading == null
+        ) {
+            if (book.startedReading == null) {
+                if (!isStartedReading.value) {
+                    Text(text = "Start Reading")
+                } else {
+                    Text(
+                        text = "Started Reading",
+                        modifier = Modifier.alpha(0.6f),
+                        color = Color.Red.copy(alpha = 0.5f)
+                    )
+                }
+            } else {
+                Text(text = "Started on: ${book.startedReading}") //TODO format date
+            }
+        }
+        
+        Spacer(modifier = Modifier.height(4.dp))
+
+        TextButton(
+            onClick = { isFinishedReading.value = true },
+            enabled = book.finishedReading == null
+        ) {
+            if (book.finishedReading == null) {
+                if (!isFinishedReading.value) {
+                    Text(text = "Mark as Read")
+                } else {
+                    Text(text = "Finished Reading!")
+                }
+            } else {
+                Text(text = "Finished on: ${book.finishedReading}") //TODO format
+            }
+        }
+    }
+
+    Text(text = "Rating", modifier = Modifier.padding(3.dp))
+    book.rating?.toInt().let {
+        RatingBar(rating = it!!) { rating ->
+            ratingVal.value = rating
+        }
     }
 }
 
