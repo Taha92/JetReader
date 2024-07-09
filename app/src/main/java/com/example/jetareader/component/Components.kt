@@ -310,6 +310,10 @@ fun BookRating(score: Double = 4.5) {
 fun ListCard(book: MBook,
              onPressDetails: (String) -> Unit = {}) {
 
+    val isStartedReading = remember {
+        mutableStateOf(false)
+    }
+
     val context = LocalContext.current
     val resources = context.resources
     val displayMetrics = resources.displayMetrics
@@ -373,6 +377,7 @@ fun ListCard(book: MBook,
                 style = MaterialTheme.typography.titleSmall
             )
         }
+
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -380,7 +385,12 @@ fun ListCard(book: MBook,
             horizontalArrangement = Arrangement.End,
             verticalAlignment = Alignment.Bottom
         ) {
-            RoundedButton(label = "Reading", radius = 70)
+            isStartedReading.value = book.startedReading != null
+
+            RoundedButton(
+                label = if (isStartedReading.value) "Reading" else "Not Yet",
+                radius = 70
+            )
         }
     }
 }
@@ -454,6 +464,7 @@ fun RatingBar(
                                 onPressRating(i)
                                 ratingState = i
                             }
+
                             MotionEvent.ACTION_UP -> {
                                 selected = false
                             }
