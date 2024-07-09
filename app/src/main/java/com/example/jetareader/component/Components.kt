@@ -51,9 +51,11 @@ import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.pointer.pointerInteropFilter
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
@@ -65,6 +67,7 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
@@ -207,6 +210,7 @@ fun ReaderAppBar(
     title: String,
     icon: ImageVector? = null,
     showProfile: Boolean = true,
+    elevation: Dp = 0.dp,
     navController: NavController,
     onBackArrowClicked: () -> Unit = {}
 ) {
@@ -260,7 +264,7 @@ fun ReaderAppBar(
             }
         },
         colors = TopAppBarDefaults.topAppBarColors(
-            containerColor = Color.Transparent
+            containerColor = Color(0xFF92CBDF)
         ),
     )
 }
@@ -341,7 +345,8 @@ fun ListCard(book: MBook,
                     modifier = Modifier
                         .height(140.dp)
                         .fillMaxWidth(0.8f)
-                        .padding(4.dp)
+                        .padding(4.dp),
+                    contentScale = ContentScale.Crop
                 )
 
                 //Spacer(modifier = Modifier.width(50.dp))

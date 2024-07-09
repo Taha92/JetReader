@@ -83,10 +83,9 @@ fun BookList(navController: NavController,
 
     val listOfBooks = viewModel.list
     if (viewModel.isLoading) {
-        Row(
-            modifier = Modifier.padding(end = 2.dp),
-            horizontalArrangement = Arrangement.SpaceAround,
-            verticalAlignment = Alignment.CenterVertically
+        Column(modifier = Modifier
+            .fillMaxWidth(),
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
             LinearProgressIndicator()
             Text(text = "Loading...")
