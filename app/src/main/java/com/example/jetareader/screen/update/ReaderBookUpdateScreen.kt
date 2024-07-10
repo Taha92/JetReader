@@ -53,6 +53,7 @@ import com.example.jetareader.component.InputField
 import com.example.jetareader.component.RatingBar
 import com.example.jetareader.component.ReaderAppBar
 import com.example.jetareader.component.RoundedButton
+import com.example.jetareader.component.ShowAlertDialog
 import com.example.jetareader.component.showToast
 import com.example.jetareader.data.DataOrException
 import com.example.jetareader.model.MBook
@@ -123,6 +124,7 @@ fun ShowSimpleForm(book: MBook, navController: NavController) {
     val isStartedReading = remember { mutableStateOf(false) }
     val isFinishedReading = remember { mutableStateOf(false) }
     val ratingVal = remember { mutableStateOf(0) }
+    val openDialog = remember { mutableStateOf(false) }
 
     SimpleForm(defaultValue = if (book.notes.toString().isNotEmpty()) book.notes.toString()
     else "No thoughts available.") { note ->
@@ -212,11 +214,8 @@ fun ShowSimpleForm(book: MBook, navController: NavController) {
         }
         Spacer(modifier = Modifier.width(100.dp))
 
-        val openDialog = remember {
-            mutableStateOf(false)
-        }
         if (openDialog.value) {
-            ShowAlertDialog(message = stringResource(id = R.string.sure) + "\n" +
+            ShowAlertDialog(title = stringResource(id = R.string.delete_book_title), message = stringResource(id = R.string.sure) + "\n" +
                             stringResource(id = R.string.action), openDialog) {
                 FirebaseFirestore.getInstance()
                     .collection("books")
@@ -237,29 +236,6 @@ fun ShowSimpleForm(book: MBook, navController: NavController) {
         RoundedButton(label = "Delete") {
             openDialog.value = true
         }
-    }
-}
-
-@Composable
-fun ShowAlertDialog(
-    message: String,
-    openDialog: MutableState<Boolean>,
-    onYesPressed: () -> Unit
-) {
-    if (openDialog.value) {
-        AlertDialog(
-            title = { Text(text = "Delete Book") },
-            text = { Text(text = message) },
-            onDismissRequest = { openDialog.value = false },
-            confirmButton = {
-                TextButton(onClick = { onYesPressed.invoke() }) {
-                    Text(text = "Yes")
-            } },
-            dismissButton = {
-                TextButton(onClick = { openDialog.value = false }) {
-                    Text(text = "No")
-                }
-            },)
     }
 }
 

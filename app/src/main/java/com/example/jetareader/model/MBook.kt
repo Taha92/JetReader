@@ -7,7 +7,7 @@ import com.google.firebase.firestore.Exclude
 data class MBook(
     @Exclude var id: String? = null,
     var title: String? = null,
-    var authors: String? = null,
+    var authors: String? = "Anonymous",
     var notes: String? = null,
 
     @get:PropertyName("book_photo_url")

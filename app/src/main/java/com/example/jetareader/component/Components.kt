@@ -18,6 +18,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
@@ -26,8 +27,8 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.FavoriteBorder
-import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Star
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -38,6 +39,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
@@ -50,14 +52,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.scale
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.pointer.pointerInteropFilter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -191,7 +192,7 @@ fun TitleSection(
     label: String
 ) {
     Surface(modifier = Modifier
-        .padding(start = 5.dp, top = 1.dp)
+        .padding(start = 5.dp, top = 8.dp)
     ) {
         Column {
             Text(
@@ -214,17 +215,41 @@ fun ReaderAppBar(
     navController: NavController,
     onBackArrowClicked: () -> Unit = {}
 ) {
+    val openDialog = remember { mutableStateOf(false) }
+
+    if (openDialog.value) {
+        ShowAlertDialog(title = stringResource(id = R.string.logout_title), message = stringResource(id = R.string.logout_description)
+            , openDialog) {
+            FirebaseAuth.getInstance().signOut().run {
+                navController.navigate(ReaderScreens.LoginScreen.name)
+            }
+        }
+    }
+
+
     TopAppBar(
         title = {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 if (showProfile) {
-                    Icon(
+                    /*Icon(
                         imageVector = Icons.Default.Person,
                         contentDescription = "Logo icon",
                         modifier = Modifier
                             .clip(RoundedCornerShape(12.dp))
                             .scale(0.9f)
-                    )
+                    )*/
+                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                        Icon(
+                            painter = painterResource(id = R.drawable.ic_profile),
+                            contentDescription = "Profile icon",
+                            modifier = Modifier
+                                .clickable {
+                                    navController.navigate(ReaderScreens.ReaderStatsScreen.name)
+                                }
+                                .size(45.dp),
+                            tint = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
                 }
 
                 if (icon != null){
@@ -247,9 +272,10 @@ fun ReaderAppBar(
         },
         actions = {
             IconButton(onClick = {
-                FirebaseAuth.getInstance().signOut().run {
+                openDialog.value = true
+                /*FirebaseAuth.getInstance().signOut().run {
                     navController.navigate(ReaderScreens.LoginScreen.name)
-                }
+                }*/
             }) {
                 if (showProfile) Row {
                     Icon(
@@ -485,4 +511,28 @@ fun RatingBar(
 fun showToast(context: Context, msg: String) {
     Toast.makeText(context, msg, Toast.LENGTH_LONG)
         .show()
+}
+
+@Composable
+fun ShowAlertDialog(
+    title: String,
+    message: String,
+    openDialog: MutableState<Boolean>,
+    onYesPressed: () -> Unit
+) {
+    if (openDialog.value) {
+        AlertDialog(
+            title = { Text(text = title) },
+            text = { Text(text = message) },
+            onDismissRequest = { openDialog.value = false },
+            confirmButton = {
+                TextButton(onClick = { onYesPressed.invoke() }) {
+                    Text(text = "Yes")
+                } },
+            dismissButton = {
+                TextButton(onClick = { openDialog.value = false }) {
+                    Text(text = "No")
+                }
+            },)
+    }
 }

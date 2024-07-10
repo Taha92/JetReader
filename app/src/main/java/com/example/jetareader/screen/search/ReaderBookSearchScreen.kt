@@ -147,7 +147,8 @@ fun BookRow(book: Item,
             Column {
                 Text(text = book.volumeInfo.title, overflow = TextOverflow.Ellipsis)
 
-                Text(text = "Author: ${book.volumeInfo.authors}",
+                val author = if (book.volumeInfo.authors == null) "Anonymous" else book.volumeInfo.authors
+                Text(text = "Author: $author",
                     overflow = TextOverflow.Clip,
                     fontStyle = FontStyle.Italic,
                     style = MaterialTheme.typography.labelMedium)

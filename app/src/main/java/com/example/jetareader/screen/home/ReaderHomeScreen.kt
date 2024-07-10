@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -99,11 +100,11 @@ fun HomeContent(navController: NavController, viewModel: HomeScreenViewModel) {
         verticalArrangement = Arrangement.Top
     ) {
         Row(modifier = Modifier.align(Alignment.Start)) {
-            TitleSection(label = "Your reading\n " + " activity")
+            TitleSection(label = "Your Reading Activity")
 
             Spacer(modifier = Modifier.fillMaxWidth(0.7f))
 
-            Column {
+            /*Column {
                 Icon(
                     painter = painterResource(id = R.drawable.ic_profile),
                     contentDescription = "Profile icon",
@@ -125,7 +126,7 @@ fun HomeContent(navController: NavController, viewModel: HomeScreenViewModel) {
                     overflow = TextOverflow.Clip
                 )
                 Divider()
-            }
+            }*/
         }
 
         ReadingRightNowArea(listOfBooks = listOfBooks,
@@ -151,7 +152,7 @@ fun BookListArea(listOfBooks: List<MBook>,
     }
 }
 
-@Composable
+/*@Composable
 fun HorizontalScrollableComponent(listOfBooks: List<MBook>,
                                   viewModel: HomeScreenViewModel = hiltViewModel(),
                                   onCardPressed: (String) -> Unit) {
@@ -192,20 +193,57 @@ fun HorizontalScrollableComponent(listOfBooks: List<MBook>,
             }
         }
     }
+}*/
+
+@Composable
+fun HorizontalScrollableComponent(listOfBooks: List<MBook>,
+                                  viewModel: HomeScreenViewModel = hiltViewModel(),
+                                  onCardPressed: (String) -> Unit) {
+    val scrollState = rememberScrollState()
+
+    Row(modifier = Modifier
+        .fillMaxWidth()
+        .heightIn(280.dp)
+        .horizontalScroll(scrollState)) {
+        if (viewModel.data.value.loading == true) {
+            LinearProgressIndicator()
+
+        }else {
+            if (listOfBooks.isEmpty()){
+                Surface(modifier = Modifier.padding(23.dp)) {
+                    Text(text = "No books found. Add a Book",
+                        style = TextStyle(
+                            color = Color.Red.copy(alpha = 0.4f),
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 14.sp
+                        )
+                    )
+
+                }
+            }else {
+                for (book in listOfBooks) {
+                    ListCard(book) {
+                        onCardPressed(book.googleBookId.toString())
+                    }
+                }
+            }
+
+        }
+    }
 }
 
 @Composable
-fun ReadingRightNowArea(listOfBooks: List<MBook>, navController: NavController) {
+fun ReadingRightNowArea(listOfBooks: List<MBook>,
+                        navController: NavController) {
     //Filter books by reading now
     val readingNowList = listOfBooks.filter { mBook ->
         mBook.startedReading != null && mBook.finishedReading == null
     }
 
     HorizontalScrollableComponent(readingNowList){
-        Log.d("TAG", "ReadingRightNowArea: $it")
+        Log.d("TAG", "BoolListArea: $it")
         navController.navigate(ReaderScreens.UpdateScreen.name + "/$it")
     }
 }
-
 
 

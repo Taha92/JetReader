@@ -29,6 +29,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.core.text.HtmlCompat
@@ -111,10 +112,13 @@ fun ShowBookDetails(bookInfo: Resource<Item>, navController: NavController) {
     }
 
     Text(
+        modifier = Modifier
+            .padding(start = 5.dp, end = 5.dp),
         text = bookData?.title.toString(),
         style = MaterialTheme.typography.headlineMedium,
         overflow = TextOverflow.Ellipsis,
-        maxLines = 19
+        maxLines = 19,
+        textAlign = TextAlign.Center
     )
     Text(text = "Authors: ${bookData?.authors.toString()}")
     Text(text = "Page Count: ${bookData?.pageCount.toString()}")
