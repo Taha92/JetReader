@@ -1,6 +1,8 @@
 package com.example.jetareader.screen.login
 
+import android.content.Context
 import android.util.Log
+import android.widget.Toast
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -10,7 +12,6 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.ktx.Firebase
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 
 class LoginScreenViewModel: ViewModel() {
@@ -20,7 +21,12 @@ class LoginScreenViewModel: ViewModel() {
     private val _loading = MutableLiveData(false)
     val loading: LiveData<Boolean> = _loading
 
-    fun signInWithEmailAndPassword(email: String, password: String, home: () -> Unit)
+    fun signInWithEmailAndPassword(
+        email: String,
+        password: String,
+        context: Context,
+        home: () -> Unit
+    )
     = viewModelScope.launch {
         try {
             auth.signInWithEmailAndPassword(email, password)
@@ -30,7 +36,8 @@ class LoginScreenViewModel: ViewModel() {
                         //TODO("take them home")
                         home()
                     } else {
-                        Log.d("FB", "signInWithEmailAndPassword: ${task.result}")
+                        Toast.makeText(context, "Invalid Credentials", Toast.LENGTH_SHORT).show()
+                        Log.d("FB", "signInWithEmailAndPassword: Credentials invalid")
                     }
                 }
         } catch (ex: Exception) {

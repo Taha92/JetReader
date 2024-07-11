@@ -29,6 +29,7 @@ import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -46,17 +47,20 @@ fun ReaderLoginScreen(navController: NavController,
                       viewModel: LoginScreenViewModel = androidx.lifecycle.viewmodel.compose.viewModel()) {
     val showLoginForm = rememberSaveable { mutableStateOf(true) }
 
+    val context = LocalContext.current
+
     Surface(modifier = Modifier
         .fillMaxSize()
     ) {
-        Column(
+        Column(modifier = Modifier
+            .padding(top = 16.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Top
         ) {
             ReaderLogo()
             if (showLoginForm.value) {
                 UserForm(loading = false, isCreateAccount = false) { email, password ->
-                    viewModel.signInWithEmailAndPassword(email, password) {
+                    viewModel.signInWithEmailAndPassword(email, password, context) {
                         navController.navigate(ReaderScreens.ReaderHomeScreen.name)
                     }
                 }
