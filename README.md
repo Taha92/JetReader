@@ -9,4 +9,21 @@ The backend integration with Firestore and Firebase handles user authentication 
 - MVVM
 - Retrofit
 - Hilt for Dependency Injection
-- Coroutines for asynchronous operations.
+- Coroutines for asynchronous operations
+
+<table>
+  <tr>
+    <td align="center"><img src="screenshots/reader1.png" alt="screenshot 1" width="200"></td>
+    <td align="center"><img src="screenshots/reader2.png" alt="screenshot 2" width="200"></td>
+    <td align="center"><img src="screenshots/reader3.png" alt="screenshot 3" width="200"></td>
+  </tr>
+  <tr>
+    <td align="center"><img src="screenshots/reader4.png" alt="screenshot 4" width="200"></td>
+    <td align="center"><img src="screenshots/reader5.png" alt="screenshot 5" width="200"></td>
+    <td align="center"><img src="screenshots/reader6.png" alt="screenshot 6" width="200"></td>
+  </tr>
+   <tr>
+    <td align="center"><img src="screenshots/reader7.png" alt="screenshot 7" width="200"></td>
+  </tr>
+
+</table>

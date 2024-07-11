@@ -371,8 +371,6 @@ fun ListCard(book: MBook,
                     modifier = Modifier
                         .height(140.dp)
                         .fillMaxWidth(0.8f)
-                        .padding(4.dp),
-                    contentScale = ContentScale.Crop
                 )
 
                 //Spacer(modifier = Modifier.width(50.dp))
