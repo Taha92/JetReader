@@ -37,6 +37,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontStyle
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.text.toUpperCase
 import androidx.compose.ui.unit.dp
@@ -82,11 +83,12 @@ fun ReaderStatsScreen(navController: NavController,
                 emptyList()
             }
 
-            Column {
+            Column(modifier = Modifier
+                .padding(top = 16.dp)) {
                 Row {
                     Box(modifier = Modifier
-                        .size(45.dp)
-                        .padding(2.dp)
+                        .size(50.dp)
+                        .padding(4.dp)
                     ) {
                         Icon(
                             imageVector = Icons.Sharp.Person,
@@ -94,14 +96,16 @@ fun ReaderStatsScreen(navController: NavController,
                         )
                     }
                     
-                    Text(text = "Hi, ${
+                    Text(modifier = Modifier.padding(2.dp),
+                        text = "Hi, ${
                         currentUser?.email.toString()
-                            .split("@")[0].uppercase(Locale.getDefault())}")
+                            .split("@")[0].uppercase(Locale.getDefault())}",
+                        textAlign = TextAlign.Center)
                 }
 
                 Card(modifier = Modifier
                     .fillMaxWidth()
-                    .padding(4.dp),
+                    .padding(4.dp, bottom = 16.dp),
                     shape = CircleShape,
                     colors = CardDefaults.cardColors(
                         containerColor = Color.White
@@ -123,7 +127,7 @@ fun ReaderStatsScreen(navController: NavController,
                     }
 
                     Column(modifier = Modifier
-                        .padding(start = 25.dp, top = 4.dp, bottom = 4.dp),
+                        .padding(start = 25.dp, top = 16.dp, bottom = 16.dp),
                         horizontalAlignment = Alignment.Start
                     ) {
                         Text(
