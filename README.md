@@ -11,6 +11,7 @@ The backend integration with Firestore and Firebase handles user authentication 
 - Hilt for Dependency Injection
 - Coroutines for asynchronous operations
 
+## Screenshots
 <table>
   <tr>
     <td align="center"><img src="screenshots/reader1.png" alt="screenshot 1" width="200"></td>
